@@ -5,7 +5,7 @@ void addCmd(std::unique_ptr<TableSchema> schema){
 	execute(stmt.c_str(), NULL, 0);
 }
 
-void viewCmd(std::unique_ptr<TableSchema> schema){
+void listCmd(std::unique_ptr<TableSchema> schema){
 	std::cout << "view cmd\n";
 }
 
@@ -14,7 +14,8 @@ void updateCmd(std::unique_ptr<TableSchema> schema){
 }
 
 void removeCmd(std::unique_ptr<TableSchema> schema){
-	std::cout << "remove cmd\n";
+	std::string stmt = schema->deleteStmt();
+	execute(stmt.c_str(), NULL, 0);
 }
 
 void checkCmd(std::unique_ptr<TableSchema> schema){

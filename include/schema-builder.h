@@ -5,6 +5,7 @@
 #include <map>
 #include "schemas.h"
 #include <memory>
+#include <string>
 
 #define TASK "task"
 #define PROJECT "project"

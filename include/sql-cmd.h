@@ -7,7 +7,7 @@
 
 void addCmd(std::unique_ptr<TableSchema> schema);
 
-void viewCmd(std::unique_ptr<TableSchema> schema);
+void listCmd(std::unique_ptr<TableSchema> schema);
 
 void updateCmd(std::unique_ptr<TableSchema> schema);
 

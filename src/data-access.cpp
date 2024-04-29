@@ -16,10 +16,12 @@ sqlite3* open_connection(){
 void execute(std::string stmt, sqlite3_callback callback, void* data){
 	sqlite3* db = open_connection();
 	char* errMsg;
-	int rc = sqlite3_exec(db, stmt.c_str(), callback, data, &errMsg);
+	int rc = sqlite3_exec(db, stmt.c_str(), callback, data, &errMsg);	
 	if(rc != SQLITE_OK){
 		std::cout << "Error executing query - code " << rc << "\n\t" << stmt << '\n' 
 						<< errMsg << std::endl;
+	}else{
+		std::cout << "Success with code " << rc << std::endl;
 	}
 	sqlite3_close(db);	
 }

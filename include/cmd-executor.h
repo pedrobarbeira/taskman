@@ -3,14 +3,27 @@
 
 #include "sql-cmd.h"
 
+#define ADD "add"
+#define REMOVE "rm"
+#define UPDATE "update"
+#define LIST "list"
+#define CHECK "check"
+#define UNCHECK "uncheck"
+
 typedef void (*Command)(std::unique_ptr<TableSchema> schema);
 
 class CmdExecutor{
 	private:	
-		std::map<std::string, Command> fTable;
+		static inline std::map<std::string, Command> fTable = {
+			{ ADD, &addCmd },
+			{ REMOVE, &removeCmd },
+			{ UPDATE, &updateCmd },
+			{ LIST, &listCmd },
+			{ CHECK, &checkCmd },
+			{ UNCHECK, &uncheckCmd}
+		};
 	public:	
-		CmdExecutor();
-		void runCmd(std::string cmdStr, std::vector<std::string> args);
+		static void runCmd(std::string cmdStr, std::vector<std::string> args);
 };
 
 #endif //_CMD_EXECUTOR_H_
