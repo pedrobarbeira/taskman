@@ -1,29 +1,27 @@
-#ifndef _CMD_EXECUTOR_H
-#define _CMD_EXECUTOR_H
+#ifndef CMD_EXECUTOR_H
+#define CMD_EXECUTOR_H
 
-#include "sql-cmd.h"
-
-#define ADD "add"
-#define REMOVE "rm"
-#define UPDATE "update"
-#define LIST "list"
-#define CHECK "check"
-#define UNCHECK "uncheck"
-
-typedef void (*Command)(std::unique_ptr<TableSchema> schema);
+#include "schema-builder.h"
+#include <string>
+#include <utility>
 
 class CmdExecutor{
-	private:	
-		static inline std::map<std::string, Command> fTable = {
-			{ ADD, &addCmd },
-			{ REMOVE, &removeCmd },
-			{ UPDATE, &updateCmd },
-			{ LIST, &listCmd },
-			{ CHECK, &checkCmd },
-			{ UNCHECK, &uncheckCmd}
-		};
-	public:	
-		static void runCmd(std::string cmdStr, std::vector<std::string> args);
+private:
+    std::unique_ptr<Repository> repository;
+
+    static void run(const stmtData_t& stmtData);
+    void readBuffers();
+public:
+    explicit CmdExecutor(std::unique_ptr<Repository> repository):
+        repository(std::move(repository)){};
+
+    void runCmd(const std::string& cmdStr, std::vector<std::string> args);
+
+    std::unique_ptr<Repository> getRepository(){
+        return std::move(repository);
+    }
 };
 
-#endif //_CMD_EXECUTOR_H_
+int projectSchema_callback(void*, int, char**, char**);
+
+#endif //CMD_EXECUTOR_H

@@ -1,34 +1,29 @@
-CODEDIRS= . ./src
-INCDIRS=. ./include/
-
+CC=g++
+BIN=taskman
 LIB=-lsqlite3
 
-CC=g++
 OPT=-O
+DEPFLAGS=-MP -MD
+CFLAGS=-Wall -Wextra -g $(INCLUDE) $(OPT) $(DEPFLAGS)
 
-DEPFLAGS=-MP -MD 
+CODEDIRS= . ./src
+INCDIRS=. ./include/ ./lib/
+INCLUDE=$(foreach D,$(INCDIRS),-I$(D))
 
-CFLAGS=-Wall -Wextra -g $(foreach D,$(INCDIRS),-I$(D)) $(OPT) $(DEPFLAGS)
-
-SRC=src
-
-CFILES=$(foreach D,$(CODEDIRS), $(wildcard $(D)/*.cpp))
-
+CFILES= $(foreach D, $(CODEDIRS), $(shell find $(D) -name '*.cpp'))
 OBJ=$(patsubst %.cpp,%.o,$(CFILES))
 DEPFILES=$(patsubst %.cpp,%.d,$(CFILES))
 
-BINARY=taskman
+all: $(BIN)
 
-all: $(BINARY)
-
-$(BINARY): $(OBJ)
+$(BIN): $(OBJ)
 	$(CC) -o $@ $^ $(LIB)
 
 %.o:%.cpp
-	$(CC) $(CFLAGS) -c -o $@ $^ 
+	$(CC) $(CFLAGS) -c -o $@ $^
 
-run:
-	@./$(BINARY)
+run: all
+	@./$(BIN)
 
 clean: 
-	rm -rf $(BINARY) *.o *.d src/*.o src/*.d
+	@rm -rf $(BIN) *.o *.d $(OBJ) $(DEPFILES)

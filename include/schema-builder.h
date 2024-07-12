@@ -1,24 +1,26 @@
-#ifndef _SCHEMA_BUILDER_H
-#define _SCHEMA_BUILDER_H
+#ifndef SCHEMA_BUILDER_H
+#define SCHEMA_BUILDER_H
 
-#include <vector>
-#include <map>
-#include "schemas.h"
-#include <memory>
-#include <string>
+#include "data-access.h"
+#include "schema/schema-project.h"
+#include "schema/schema-task.h"
 
-#define TASK "task"
 #define PROJECT "project"
+#define TASK "task"
 
-typedef std::unique_ptr<TableSchema> (*BuildFunction)(std::vector<std::string> params);
+typedef std::function<std::unique_ptr<Schema>(const std::vector<std::string>& params)> buildFunction;
+
+std::unique_ptr<Schema> buildProject(const std::vector<std::string>& params);
+std::unique_ptr<Schema> buildTask(const std::vector<std::string>&);
 
 class SchemaBuilder{
+private:
+    static inline std::unordered_map<std::string, buildFunction> buildMap = {
+            { TASK, buildTask },
+            { PROJECT, buildProject }
+    };
 public:
-	static std::unique_ptr<TableSchema> build(std::vector<std::string> args); 
+	static std::unique_ptr<Schema> build(std::vector<std::string> args);
 };
 
-std::unique_ptr<TableSchema> buildTask(std::vector<std::string>);
-std::unique_ptr<TableSchema> buildProject(std::vector<std::string>);
-
-
-#endif //_SCHEMA_BUILDER_H_
+#endif //SCHEMA_BUILDER_H

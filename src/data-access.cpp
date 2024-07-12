@@ -2,6 +2,14 @@
 
 namespace fs = std::filesystem;
 
+void db_install(){
+    fs::path dbPath = get_db_path();
+    if(!fs::exists(dbPath)){
+        create_db(dbPath);
+    }
+    create_db_tables(dbPath);
+}
+
 fs::path get_db_path(){
 	return std::filesystem::path(std::filesystem::current_path()) / DB_NAME;
 }
@@ -13,7 +21,7 @@ sqlite3* open_connection(){
 	return db;
 }
 
-void execute(std::string stmt, sqlite3_callback callback, void* data){
+void execute(const std::string& stmt, sqlite3_callback callback, void* data){
 	sqlite3* db = open_connection();
 	char* errMsg;
 	int rc = sqlite3_exec(db, stmt.c_str(), callback, data, &errMsg);	
@@ -26,7 +34,7 @@ void execute(std::string stmt, sqlite3_callback callback, void* data){
 	sqlite3_close(db);	
 }
 
-void create_db(fs::path dbPath){
+void create_db(const fs::path& dbPath){
 	std::ofstream dbFile(dbPath);
 	if(dbFile.is_open()){
 		std::cout << "Db file successfully created\n";
@@ -36,7 +44,7 @@ void create_db(fs::path dbPath){
 	}
 }
 
-bool table_exists(sqlite3* db, std::string tableName){
+bool table_exists(sqlite3* db, const std::string& tableName){
 	sqlite3_stmt* stmt;
 	
 	std::stringstream ss;
@@ -58,10 +66,10 @@ bool table_exists(sqlite3* db, std::string tableName){
 	return rc == SQLITE_ROW;
 }
 
-void create_db_table(sqlite3* db, std::string tableName, std::string createStmt){
+void create_db_table(sqlite3* db, const std::string& tableName, const std::string& createStmt){
 	if(!table_exists(db, tableName)){
 		char* errorMsg;
-		int rc = sqlite3_exec(db, createStmt.c_str(), NULL, 0, &errorMsg);
+		int rc = sqlite3_exec(db, createStmt.c_str(), nullptr, nullptr, &errorMsg);
 
 		if(rc != SQLITE_OK){
 			std::cout << "Error creating table [" << tableName << "]\n" 
@@ -74,7 +82,7 @@ void create_db_table(sqlite3* db, std::string tableName, std::string createStmt)
 }
 
 
-void create_db_tables(fs::path dbPath){
+void create_db_tables(const fs::path& dbPath){
 	sqlite3* db;
 
 	int rc = sqlite3_open(dbPath.string().c_str(), &db);
